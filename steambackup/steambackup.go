@@ -5,23 +5,27 @@ import (
 	"time"
 )
 
-func CopyFromDestinationToTemp(source string, destination string) {
+func CopyFromBackupToTemp(source, destination string) {
 	// TODO: unzip latest backup
-	CopyFolder(source, destination)
+	ZipFolder("Backup.zip", source)
+
+	CopyFolder("./Backup.zip", destination)
+
 }
 
-func CopyFromTempToDestination(source string, destination string) {
+func CopyFromTempToBackup(source, destination string) {
 	// TODO: zip Folder
 	CopyFolder(source, destination)
+	UnzipFolder("./Backup.zip", destination)
 }
 
 var (
 	stop = false
 )
 
-func StartBackup(source string, backup string) {
+func StartBackup(source, backup string) {
 	fmt.Println("0. Start Backup")
-	CopyFromDestinationToTemp(backup, source)
+	CopyFromBackupToTemp(backup, source)
 	fmt.Println("1. Copy disk C to D DONE")
 
 	go func() {
@@ -32,7 +36,7 @@ func StartBackup(source string, backup string) {
 
 			fmt.Println("Backup disk C to D")
 
-			CopyFromTempToDestination(source, backup)
+			CopyFromTempToBackup(source, backup)
 
 			fmt.Println("Backup done")
 
