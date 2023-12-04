@@ -2,6 +2,7 @@ package steambackup
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -39,6 +40,37 @@ func CopyFolder(source, destination string) error {
 		_, err = io.Copy(destFile, sourceFile)
 		return err
 	})
+}
+
+func CopyFile(source, destination string) error {
+	sourceFile, err := os.Open(source)
+	if err != nil {
+		return fmt.Errorf("error opeoning source file: %v", err)
+	}
+	defer sourceFile.Close()
+	
+	destinationFile, err := os.Create(destination)
+	if err != nil {
+		return fmt.Errorf("error opeoning destination file: %v", err)
+	}
+	defer destinationFile.Close()
+	
+	_, err = io.Copy(destinationFile, sourceFile)
+	if err != nil {
+		return fmt.Errorf("error copy file contents: %v", err)
+	}
+
+
+	return nil
+
+}
+
+func DeleteFile(filePath string) error {
+	err := os.Remove(filePath)
+	if err != nil {
+		return fmt.Errorf("error deleting file : %v", err)
+	}
+	return nil
 }
 
 func ZipFolder(zipFileName, sourceFolder string) error {

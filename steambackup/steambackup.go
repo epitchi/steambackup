@@ -7,18 +7,22 @@ import (
 
 func CopyFromBackupToTemp(source, destination string) {
 	// TODO: unzip latest backup
-	ZipFolder("Backup.zip", source)
-
-	CopyFolder("./Backup.zip", destination)
-
+	CopyFolder(source+"/Zip/Backup.zip", destination)
+	UnzipFolder("Backup.zip", destination)
+	DeleteFile(destination + "/Backup.zip")
 }
 
 func CopyFromTempToBackup(source, destination string) {
-	// TODO: zip Folder
-	CopyFolder(source, destination)
-	UnzipFolder("./Backup.zip", destination)
-}
 
+	ZipFolder("Backup.zip", source)
+	err := CopyFile("D:/code/steambackup/Backup.zip", destination + "/Backup.zip")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("File backup successfully")
+}
 var (
 	stop = false
 )
@@ -37,8 +41,6 @@ func StartBackup(source, backup string) {
 			fmt.Println("Backup disk C to D")
 
 			CopyFromTempToBackup(source, backup)
-
-			fmt.Println("Backup done")
 
 			time.Sleep(10 * time.Second)
 		}
