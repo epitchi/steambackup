@@ -2,6 +2,7 @@ package steambackup
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -15,22 +16,30 @@ func CopyFromBackupToTemp(source, destination string) {
 func CopyFromTempToBackup(source, destination string) {
 
 	ZipFolder("Backup.zip", source)
-	err := CopyFile("D:/code/steambackup/Backup.zip", destination + "/Backup.zip")
+
+	currentDir, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println("File backup successfully")
+	err = CopyFile(currentDir+"/Backup.zip", destination+"/Backup.zip")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("SteamBackup: File backup successfully")
 }
+
 var (
 	stop = false
 )
 
 func StartBackup(source, backup string) {
-	fmt.Println("0. Start Backup")
+	fmt.Println("SteamBackup: Start Backup")
 	CopyFromBackupToTemp(backup, source)
-	fmt.Println("1. Copy disk C to D DONE")
+	fmt.Println("SteamBackup: Copy disk C to D DONE")
 
 	go func() {
 		for {
@@ -38,7 +47,7 @@ func StartBackup(source, backup string) {
 				break
 			}
 
-			fmt.Println("Backup disk C to D")
+			fmt.Println("SteamBackup: Backup disk C to D")
 
 			CopyFromTempToBackup(source, backup)
 
