@@ -5,13 +5,18 @@ import (
 	"time"
 )
 
-func CopyFromBackupToTemp(source, destination string) (error) {
-	UnzipFolder(source+"Backup.zip", destination)
-	return nil
+func CopyFromBackupToTemp(source, destination string) {
+	err := UnzipFolder(source, destination)
+	if err != nil {
+		fmt.Printf("error backup folder : %s\n",err.Error())
+	}
 }
 
 func CopyFromTempToBackup(source, destination string) {
-	ZipFolder(destination+"Backup.zip", source)
+	err := ZipFolder(destination, source)
+	if err != nil {
+		fmt.Printf("error backup folder : %s\n",err.Error())
+	}
 }
 
 var (
@@ -19,24 +24,19 @@ var (
 )
 
 func StartBackup(source, backup string) {
-	fmt.Println("SteamBackup: Start Backup")
-	err := CopyFromBackupToTemp(backup, source)
-	if err != nil{
-		fmt.Printf("%s\n",err.Error())
-	}
-	fmt.Println("SteamBackup: Copy disk D to C DONE")
+	CopyFromBackupToTemp(backup, source)
 
 	go func() {
 		for {
 			if stop {
 				break
 			}
-
 			CopyFromTempToBackup(source, backup)
 			time.Sleep(10 * time.Second)
 		}
 	}()
 }
+
 
 func StopBackup() {
 	stop = true
